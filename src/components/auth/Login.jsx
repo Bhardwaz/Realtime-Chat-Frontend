@@ -1,15 +1,15 @@
 import axios from "axios"
 import { useState } from "react"
-import { Link, Navigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+
 const Login = () => {
   const [username, setUserName] = useState('')
   const [password, setPassword] = useState("")
 
   const [showPassword, setShowPassword] =  useState(false)
-
+  const navigate = useNavigate()
   async function postData(e){
     e.preventDefault()
-    
     if(!password || !username) return
 
     const formData = new FormData()
@@ -25,10 +25,9 @@ const Login = () => {
     try {
     const {data} = await axios.post("/api/v1/users/login", formData, config)
     
-    if(data.statusCode){
-      Navigate()
+    if(data.statusCode === 201){
+      navigate('/homepage')
     } 
-    
     } catch (error) {
       console.log(error);
     }
@@ -66,7 +65,6 @@ const Login = () => {
        Do not have a account? Make one !!!
     </Link>
     </div>
-
      </form>
     </div>
   )

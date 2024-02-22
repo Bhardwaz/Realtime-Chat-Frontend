@@ -6,7 +6,9 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import Login from './components/auth/Login.jsx'
 import Register from './components/auth/Register.jsx'
 import ChatsPage from './components/pages/ChatsPage.jsx'
-
+import ChatsHome from './components/pages/ChatsHome.jsx'
+import { Provider } from 'react-redux'
+import store from './components/utils/store.js'
 const router = createBrowserRouter([
   {
     path:'/',
@@ -23,14 +25,18 @@ const router = createBrowserRouter([
       {
        path:"/chatspage",
        element:< ChatsPage />
+      }, 
+      {
+      path:"/homepage",
+      element: <ChatsHome/>
       }
     ]
   }
 ])
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+  <Provider store={store}>
     <RouterProvider router={router} />
     <App />
-  </React.StrictMode>,
+  </Provider>,
 )
