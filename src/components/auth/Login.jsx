@@ -1,20 +1,31 @@
 import axios from "axios"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
+import {useDispatch} from 'react-redux'
+import { setUser } from "../utils/userSlice"
 
 const Login = () => {
-  const [username, setUserName] = useState('')
-  const [password, setPassword] = useState("")
+  const [userData, setUserData] = useState({
+    username:"", 
+    password:""
+  })
+  
+  const dispatch = useDispatch()
 
   const [showPassword, setShowPassword] =  useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [showResponse, setShowResponse] = useState(false)
+  const [responseMessage, setResponseMessage] = useState('')
+
   const navigate = useNavigate()
   async function postData(e){
     e.preventDefault()
-    if(!password || !username) return
+    setIsLoading(true)
+    if(!userData.password || !userData.username) return
 
     const formData = new FormData()
-    formData.append('username', username)
-    formData.append('password', password)    
+    formData.append('username', userData.username)
+    formData.append('password', userData.password)    
 
     const config = {
       headers: {
@@ -23,50 +34,97 @@ const Login = () => {
     };
 
     try {
-    const {data} = await axios.post("/api/v1/users/login", formData, config)
-    
-    if(data.statusCode === 201){
-      navigate('/homepage')
-    } 
+    const { data } = await axios.post("/api/v1/users/login", formData, config)
+     
+    console.log(data);
+    setIsLoading(false)
+    const loggedInUser = JSON.stringify(data?.message?.user)
+    const loggedInId = data?.message?.user?._id
+    if(loggedInUser){
+    console.log(loggedInUser);
+    localStorage.setItem("loggedInUser", loggedInUser)
+    localStorage.setItem("loggedInId", loggedInId)
+    dispatch(setUser(data?.message?.user))
+    navigate('/home')
+    }
+
     } catch (error) {
-      console.log(error);
+      console.log(error?.response?.data?.data);
+      setShowResponse(true)
+      setResponseMessage(error?.response?.data?.data)
+      setIsLoading(false)
     }
   }
+   
+  const handleChange = event => {
+    const {name, value} = event.target
+    setUserData({
+      ...userData,
+      [name]:value
+    })
+  }
+
+  useEffect(() => {
+    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"))
+    const loggedInId = localStorage.getItem("loggedInId")
+    if(loggedInUser?._id === loggedInId) navigate("/home")
+    }, [navigate])
+
   return (
-    <div className="w-1/2 h-screen flex justify-center items-center mx-auto text-gray-200">
-     <form onSubmit={(e) => postData(e)} encType="multipart/form-data" className="flex flex-col gap-2">
-     
-    <div className="flex gap-4">
-    <label htmlFor="username" className="flex items-center"> Username </label>
-    <input type="text" id="username" placeholder="Username" onChange={e => setUserName(e.target.value)} className="border p-2 outline-none rounded-lg text-black" />   
-    </div> 
+    <>
+    <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+  <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+    <img className="mx-auto h-10 w-auto" src="https://cdn-icons-png.flaticon.com/512/10948/10948696.png" alt="Your Company"/>
+    <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white">Sign in to your account</h2>
+  </div>
 
-    <div className="flex gap-5">
-    <label htmlFor="passsword" className="flex items-center"> Password </label>
-    <input type={showPassword ? 'text' : 'password'} id="passsword" placeholder="Passsword" onChange={e => setPassword(e.target.value)} className="border p-2 outline-none rounded-lg text-black" /> 
-    <button
-        type="button"
-        className="border p-2 rounded-lg"
-        onClick={() => setShowPassword(!showPassword)}
-      >
-        {showPassword ? 'Hide' : 'Show'}
-      </button>  
-    </div> 
+  <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+    <form onSubmit={postData} className="space-y-6">
+      <div>
+        <label htmlFor="username" className="block text-sm font-medium leading-6 text-white"> Username </label>
+        <div className="mt-2">
+          <input id="username" placeholder="Username" name="username" type="username" autoComplete="username" required
+          onChange={handleChange}
+          value={userData.username}
+          className="bg-gray-300  block w-full rounded-md border-0 py-1.5 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-2 outline-none"/>
+        </div>
+      </div>
 
-    <div className="flex items-center justify-start">
-    <button type="submit" className="w-2/3 bg-white flex justify-center text-black rounded-lg font-bold ml-12 mt-2 hover:bg-gray-300 hover:scale-95 active:scale-100">
-        Submit
-    </button>
-    </div>
-     
-    <div>
-    <Link to="/"
-    className="underline" type="button">
-       Do not have a account? Make one !!!
-    </Link>
-    </div>
-     </form>
-    </div>
+      <div>
+        <div className="flex items-center justify-between">
+          <label htmlFor="password" className="block text-sm font-medium leading-6 text-white">Password</label>
+          <div className="text-sm">
+            <button onClick={() => setShowPassword(!showPassword)} type="button" className="font-semibold text-indigo-600 hover:text-indigo-500">Show</button>
+          </div>
+        </div>
+        <div className="mt-2">
+          <input id="password" 
+          placeholder="Password" 
+          name="password" 
+          type={`${showPassword ? "text" : "password"}`} autoComplete="current-password" 
+          required 
+          onChange={handleChange}
+          className="block w-full rounded-md border-0 py-1.5 text-black bg-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-2 outline-none"/>
+        </div>
+      </div>
+
+      <div className="text-red-500">
+         { showResponse ? responseMessage : ""}
+      </div>
+
+      <div>
+        <button type="submit" disabled={isLoading} className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">{ isLoading ? "Wait" : "Login" }</button>
+      </div>
+    </form>
+
+    <p className="mt-10 text-center text-sm text-white">
+      Not a member?
+      <Link to="/" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"> Register here  </Link>
+    </p>
+  </div>
+</div>
+    </>
+
   )
 }
 
