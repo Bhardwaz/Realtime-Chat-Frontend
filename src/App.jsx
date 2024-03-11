@@ -1,12 +1,13 @@
 import { Outlet } from 'react-router-dom'
-import Register from './components/auth/Register'
-import ChatsPage from './components/pages/ChatsPage'
+import SignUp from './components/auth/SignUp'
+import Home from './components/pages/Home'
 
 function App() {
   return (
     <>
     <Outlet>
-    <Register/>
+    <SignUp/>
+    <Home/>
     </Outlet>
     </>
   )
