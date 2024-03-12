@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import ChatDashboard from "./ChatDashboard"
 import ChatRoom from "./ChatRoom"
 import { useNavigate } from "react-router-dom"
@@ -8,7 +8,8 @@ import SideDrawer from "./SideDrawer"
 function Home() {
   const navigate = useNavigate()
   const user =  JSON.parse(localStorage.getItem("loggedInUser"))
-
+  const [fetchAgain, setFetchAgain] = useState(false)
+  
   useEffect(() => {
   const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"))
 
@@ -24,12 +25,12 @@ function Home() {
       style={{borderRadius:"10px"}}
       display="flex"
       justifyContent="space-between"
-      w="100%"
-      h="96.5vh"
+      width="100%"
+      height="96.5vh"
       p="10px"
       >
-      {user && <ChatDashboard/> }
-      { user && <ChatRoom/> }
+      {user && <ChatDashboard fetchAgain={fetchAgain} /> }
+      { user && <ChatRoom fetchAgain={fetchAgain} setFetchAgain={setFetchAgain} /> }
       </Box>
     </div>
   )
