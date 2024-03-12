@@ -67,13 +67,15 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const fetchMessages = async () => {
     if(!selectedChat) return
 
+    setSingleChatInfo(prevState =>({...prevState, loading:true}))
+
     try {
       const config = {
         "Content-Type":"application/json"
       }
       const {data} = await axios.get(`/api/v1/message/${selectedChat._id}`, config)
       
-      setSingleChatInfo(prevState =>({...prevState, allMessages:[data]}))
+      setSingleChatInfo(prevState =>({...prevState, allMessages:data}))
 
       setSingleChatInfo(prevState =>({...prevState, loading:false}))
 
@@ -96,7 +98,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
    useEffect(() => {
      fetchMessages()
    }, [selectedChat])
-
+    
   return <div> 
     {
       selectedChat ? (
@@ -148,7 +150,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             {
               singleChatInfo.loading ? <Spinner size={"xl"} w={20} h={20} alignSelf={"center"} margin={"auto"} /> : (
                 <div className="messages">
-                  <ScrollableChat messages={singleChatInfo.allMessages} />
+                  <ScrollableChat 
+                  messages={singleChatInfo.allMessages} />
                 </div>
               )
             }
