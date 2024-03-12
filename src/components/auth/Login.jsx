@@ -35,16 +35,15 @@ const Login = () => {
 
     try {
     const { data } = await axios.post("/api/v1/users/login", formData, config)
-     
-    console.log(data);
     setIsLoading(false)
     const loggedInUser = JSON.stringify(data?.message?.user)
     const loggedInId = data?.message?.user?._id
+    const user = data?.message?.user
     if(loggedInUser){
     console.log(loggedInUser);
     localStorage.setItem("loggedInUser", loggedInUser)
     localStorage.setItem("loggedInId", loggedInId)
-    dispatch(setUser(data?.message?.user))
+    dispatch(setUser(user))
     navigate('/home')
     }
 
