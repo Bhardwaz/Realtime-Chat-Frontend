@@ -8,8 +8,31 @@ body {
     background-repeat: no-repeat;
     background-size: 100% */
     background-color: rgba(0, 0, 0, .8);
-    font-family: Roboto,'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
-}
+    font-family: Roboto,'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    width: 100vw;
+    height:100vh;
+  }
+
+::-webkit-scrollbar {
+    width: 0px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: rgba(136, 136, 136, 0.281);
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+  .messages{
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    scrollbar-width: none
+  }
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
