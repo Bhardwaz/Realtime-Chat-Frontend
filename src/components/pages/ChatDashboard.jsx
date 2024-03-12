@@ -1,138 +1,121 @@
 import { useEffect, useState } from "react"
-import axios from "axios"
-import { selectedFriendToChat } from "../utils/userSlice.js"
 import { useDispatch, useSelector } from "react-redux"
 import useActive from "../utils/useActive.js"
-import { fetchChats } from "../utils/getChatsSlice.js"
+import {useToast} from "@chakra-ui/react"
+import axios from "axios"
+import { setChats, setSelectedChat } from "../utils/userSlice.js"
+import { Box, Button, Stack, Text } from "@chakra-ui/react"
+import {AddIcon} from "@chakra-ui/icons"
+import ChatLoading from "../misc/ChatLoading.jsx"
+import { getSender } from "../utils/chatLogics.js"
+import GroupChatModel from "../misc/GroupChatModel.jsx"
 
-function ChatDashboard() {
-  const dispatch = useDispatch();
-  const user = JSON.parse(localStorage.getItem("loggedInUser"));
-  let timerId;
-  const [search, setSearch] = useState('');
-  const [gotUsers, setGotUsers] = useState([]);
-  const [selectedChat, setSelectedChat] = useState('');
-  const [chats, setChats] = useState([]);
-  const active = useActive();
-   
-  const state = useSelector(state => state.chatSlice);
-  console.log(state);
+function ChatDashboard({ fetchAgain }) {
+  const [loggedInUser, setLoggedInUser] = useState('')
+  const toast = useToast()
+  const dispatch = useDispatch()
 
-  const debounce = (func, delay) => {
-    clearTimeout(timerId);
-    timerId = setTimeout(func, delay);
-  }
+  const selectedChat = useSelector(state => state?.chatUser?.selectedChat)
   
-  async function makeApiRequest() {
+  const chats = useSelector(state => state?.chatUser?.chats)
+
+  const fetchChats = async () => {
     try {
       const config = {
-        "Content-type": "application/json"
+        "Content-type": "application/json",
       };
-      const { data } = await axios.get(`/api/v1/users/searchUser?searchUser=${search}`, config);
-      setGotUsers(data?.data);
+      const { data } = await axios.get("/api/v1/chat", config);
+      dispatch(setChats(data?.data))       
     } catch (error) {
-       console.log(error); 
+      toast({
+        title: "Error Occured!",
+        description: "Failed to Load the chats",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom-left",
+      });
     }
   }
 
-  function createChat() {
-    const config = {
-      "Content-type": "application/json"
-    };
-    try {
-      const accessChat = axios.post("/api/v1/chat", {
-        _id: selectedChat
-      }, config);
+  useEffect(() => {
+    setLoggedInUser(JSON.parse(localStorage.getItem('loggedInUser')))
+    fetchChats()
+  }, [fetchAgain])
 
-      const fetchChats = axios.get("/api/v1/chat");
-      
-      Promise.all([accessChat, fetchChats])
-        .then(responses => {
-          console.log(responses);
-        });
-    } catch (error) {
-      console.log(error);
-    }
-  }
-   
-  useEffect(() => {
-    if (!search) return setGotUsers([]);
-    try {
-      debounce(makeApiRequest, 2000);
-    } catch (error) {
-      console.log(error);
-    }
-  }, [search]);
-     
-  useEffect(() => {
-    dispatch(fetchChats());  
-  }, [dispatch]);
-  
-  useEffect(() => {
-    setChats(state?.data?.data?.data);
-  }, [state]);
-   
-  console.log(chats, 'chats');
   return (
-    <div className="lg:w-[18%] bg-[#F9F9F9]">
-      <div className="w-full h-[15%] flex gap-4 p-4 items-center">
-         <div className="w-16 h-16 rounded-full overflow-hidden">
-           <img
-           src={user?.avatar}
-           alt="avatar"
-           className="w-full h-full object-cover"/>
-         </div>
+     <Box
+      display={{ base: selectedChat ? "none" : "flex", md: "flex" }}
+      flexDir="column"
+      alignItems="center"
+      p={3}
+      bg="white"
+      w={{ base: "100%", md: "31%" }}
+      borderRadius="lg"
+      borderWidth="1px"
+     > 
+     <Box
+     pb={3}
+     px={3}
+     fontSize={{ base: "28px", md: "30px" }}
+     fontFamily="Lato"
+     display="flex"
+     w="100%"
+     justifyContent="space-between"
+     alignItems="center"
+     >
+      My Chats
+    <GroupChatModel>
+      <Button
+       display="flex"
+       fontSize={{ base: "17px", md: "10px", lg: "17px" }}
+       rightIcon={<AddIcon />}
+      >
+        New Group Chat
+      </Button>
+    </GroupChatModel>
+     </Box>
 
-        <div className="flex items-center">
-          <p className="text-[#4883FB] font-semibold text-lg mt-2">{user?.username} <span className={`inline-block w-2 h-2 ${active ? "bg-green-500" : "bg-red-700"} rounded-full mr-2 mt-2`}></span> </p> 
-        </div>
-      </div>
-
-      <div className="ml-2">
-        <input
-          type="text"
-          className="rounded-lg px-4 py-2 border border-gray-300 focus:outline-none focus:border-blue-500"
-          placeholder="Search Friends"
-          onChange={e => setSearch(e.target.value)} />
-      </div>
-
-      {/* Chats */}
-      <div className="overflow-y-auto max-h-[calc(100vh-4rem)] scrollbar-thin scrollbar-thumb-blue-500 text-blue-500 scrollbar-track-blue-200 hover:text-black">
-        { chats?.length > 0 ? chats.map(chat => (
-          <div 
-            key={chat._id} 
-            className="lg:w-full items-center flex gap-2 border m-1 cursor-pointer hover:bg-blue-500 p-2 rounded-lg">
-            <div className="w-12 h-12 rounded-full overflow-hidden">
-              <img
-                src={chat?.avatar}
-                alt="avatar"
-                className="w-full h-full object-cover"/>
-            </div>
-            <p>{chat?.chatName}</p>
-          </div>
-        )) : null }
-        
-        { gotUsers.length ? <p className="p-3"> {gotUsers.length} Results Found </p> : " "}
-        { gotUsers ? gotUsers.map(user => (
-          <div 
-            onClick={() => {
-              dispatch(selectedFriendToChat(user));
-              setSelectedChat(user._id);
-              createChat();
-            }} 
-            key={user._id} 
-            className="lg:w-full items-center flex gap-2 border m-1 cursor-pointer hover:bg-blue-500 p-2 rounded-lg">
-            <div className="w-12 h-12 rounded-full overflow-hidden">
-              <img
-                src={user?.avatar}
-                alt="avatar"
-                className="w-full h-full object-cover"/>
-            </div>
-            <p>{user?.username}</p>
-          </div>
-        )) : null }
-      </div>
-    </div>
+     <Box
+     display="flex"
+     flexDir="column"
+     p={3}
+     bg="#F8F8F8"
+     w="100%"
+     h="100%"
+     borderRadius="lg"
+     overflowY="hidden"
+     >
+      {
+        chats ? (
+          <Stack overflowY='scroll'>
+           {
+             chats.map(chat => (
+              <Box onClick={() => dispatch(setSelectedChat(chat))}
+              cursor="pointer"
+              bg={selectedChat === chat ? "#38B2AC" : "#E8E8E8"}
+              color={selectedChat === chat ? "white" : "black"}
+              px={3}
+              py={2}
+              borderRadius="lg"
+              key={chat._id}>
+                 <Text>
+                     {
+                      !chat.isGroupChat ? (
+                         getSender(loggedInUser, chat.participants)
+                      ) : ( chat.chatName )
+                     }
+                 </Text>
+              </Box>
+             ))
+           }
+          </Stack>
+        ) : (
+          <ChatLoading/>
+        )
+      }
+     </Box>
+     </Box>
   );
 }
 
