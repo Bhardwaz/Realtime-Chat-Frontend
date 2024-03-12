@@ -1,4 +1,4 @@
-import { Box, Button, Tooltip, Text, Menu, MenuButton, MenuItem, MenuList, MenuDivider, Drawer, useDisclosure, DrawerOverlay, DrawerHeader, DrawerContent, DrawerBody, Input, useToast } from "@chakra-ui/react"
+import { Box, Button, Tooltip, Text, Menu, MenuButton, MenuItem, MenuList, MenuDivider, Drawer, useDisclosure, DrawerOverlay, DrawerHeader, DrawerContent, DrawerBody, Input, useToast, Spinner } from "@chakra-ui/react"
 import { useState } from "react"
 import { BellIcon, ChevronDownIcon } from "@chakra-ui/icons"
 import {Avatar} from "@chakra-ui/react"
@@ -7,8 +7,8 @@ import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import ChatLoading from "../misc/ChatLoading"
 import UserListItem from "../misc/UserListItem"
-import { useDispatch } from "react-redux"
-import { setSelectedChat } from "../utils/userSlice"
+import { useDispatch, useSelector } from "react-redux"
+import { setChats, setSelectedChat } from "../utils/userSlice"
 
 const SideDrawer = () => {
    const user =  JSON.parse(localStorage.getItem("loggedInUser"))
@@ -24,6 +24,8 @@ const SideDrawer = () => {
     loadingChat:false
   })
 
+  const chats = useSelector(state => state.chatUser.chats)
+  
   const logoutHandler = () => {
     localStorage.removeItem("loggedInUser")
     navigate("/login")
@@ -81,13 +83,15 @@ const SideDrawer = () => {
         "Content-type": "application/json"
     };
 
-    const {data} = await axios.post('/api/v1/chat', {
+    const { data } = await axios.post('/api/v1/chat', {
         _id
     }, config)
+    if(!chats?.find(chat => chat._id === data._id)) dispatch(setChats([data?.data, ...chats]))
 
-    dispatch(setSelectedChat(data))
-
+    dispatch(setSelectedChat(data?.data))
+    
     setSearchUsers(prevState => ({ ...prevState, loadingChat:false }));
+
     onClose()
     } catch (error) {
         toast({
@@ -175,6 +179,7 @@ const SideDrawer = () => {
                 <UserListItem key={user._id} user={user} handleFunction={() => accessChat(user._id)} />
             ))
         }
+      { searchUsers.loadingChat && <Spinner ml='auto' d='flex' /> }
       </DrawerBody>
       </DrawerContent>
     </Drawer>
