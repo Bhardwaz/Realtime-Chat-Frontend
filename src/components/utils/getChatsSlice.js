@@ -7,6 +7,7 @@ export const fetchChats = createAsyncThunk("fetchChats", async () => {
       "Content-type": "application/json",
     };
     const { data } = await axios.get("/api/v1/chat", config);
+    console.log(data);
     return data;
   } catch (error) {
     console.log(error);
@@ -17,7 +18,7 @@ const chatSlice = createSlice({
   name: "chats",
   initialState: {
     isLoading: false,
-    data: null,
+    data: [],
     isError: false,
   },
   extraReducers: (builder) => {
