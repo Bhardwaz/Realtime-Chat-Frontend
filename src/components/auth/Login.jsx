@@ -3,6 +3,7 @@ import { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import {useDispatch} from 'react-redux'
 import { setUser } from "../utils/userSlice"
+import { backendUrl } from "../utils/constants"
 
 const Login = () => {
   const [userData, setUserData] = useState({
@@ -34,7 +35,7 @@ const Login = () => {
     };
 
     try {
-    const { data } = await axios.post("/api/v1/users/login", formData, config)
+    const { data } = await axios.post(`${backendUrl}/api/v1/users/login`, formData, config)
     setIsLoading(false)
     const loggedInUser = JSON.stringify(data?.message?.user)
     const loggedInId = data?.message?.user?._id
