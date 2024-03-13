@@ -117,7 +117,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
     if(!socketConnected) return
     if(!typing){
-     setTyping(true)
+    //  setTyping(true)
      socket.emit('typing', selectedChat._id)
     }
     let lastTypingTime = new Date().getTime();
@@ -127,7 +127,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       let timeDiff = timeNow - lastTypingTime;
       if (timeDiff >= timerLength && typing) {
         socket.emit("stop typing", selectedChat._id);
-        setTyping(false);
+        // setTyping(false);
       }
     }, timerLength);
   }
@@ -139,14 +139,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
     socket.on('typing', () => setTyping(true))
     socket.on('stop typing', () => setTyping(false))
-  }, [])
-  
-   useEffect(() => {
-     fetchMessages()
-     selectedChatCompare = selectedChat
-   }, [selectedChat])
 
-   useEffect(() => {
     socket.on('message received', (newMessageReceived) => {
       console.log(newMessageReceived, "new message received");
       if(!selectedChatCompare || selectedChatCompare._id !== newMessageReceived.chat._id ){
@@ -155,7 +148,13 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         setSingleChatInfo(prevState => ({...prevState, allMessages:[...prevState.allMessages, newMessageReceived]}))
       }
     })
-   })
+  }, [])
+  
+   useEffect(() => {
+     fetchMessages()
+     selectedChatCompare = selectedChat
+   }, [selectedChat])
+
 
   return <div> 
     {
