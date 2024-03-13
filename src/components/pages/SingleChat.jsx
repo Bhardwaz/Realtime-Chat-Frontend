@@ -13,6 +13,7 @@ import animationData from "../../animation/typing.json"
 import io from "socket.io-client"
 const ENDPOINT = "http://localhost:4000"
 let socket, selectedChatCompare
+import { setNotifications } from "../utils/userSlice";
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const toast = useToast()
@@ -39,6 +40,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
    user = JSON.parse(localStorage.getItem('loggedInUser'))
   }
   const selectedChat = useSelector(state => state.chatUser.selectedChat)
+
+  const notifications = useSelector(state => state.chatUser.notifications)
+
   const dispatch = useDispatch()
   
   const sendMessage = async (e) => {
@@ -150,13 +154,16 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     socket.on('message received', (newMessageReceived) => {
       console.log(newMessageReceived, "new message received");
       if(!selectedChatCompare || selectedChatCompare._id !== newMessageReceived.chat._id ){
-         // give notification
+         if(!notifications.includes(newMessageReceived)){
+          dispatch(setNotifications([newMessageReceived, ...notifications]))
+          setFetchAgain(!fetchAgain)
+         }
       }else{
         setSingleChatInfo(prevState => ({...prevState, allMessages:[...prevState.allMessages, newMessageReceived]}))
       }
     })
-   })
-
+   }, [])
+   
   return <div> 
     {
       selectedChat ? (
