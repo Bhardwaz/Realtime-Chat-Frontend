@@ -7,10 +7,14 @@ const userSlice = createSlice({
     friendForChat: "",
     selectedChat: "",
     chats: [],
+    notifications: [],
   },
   reducers: {
     setUser: (state, action) => {
       state.user = action.payload;
+    },
+    setNotifications: (state, action) => {
+      state.notifications = action.payload;
     },
     selectedFriendToChat: (state, action) => {
       state.friendForChat = action.payload;
@@ -24,6 +28,11 @@ const userSlice = createSlice({
   },
 });
 
-export const { setUser, selectedFriendToChat, setSelectedChat, setChats } =
-  userSlice.actions;
+export const {
+  setUser,
+  selectedFriendToChat,
+  setSelectedChat,
+  setChats,
+  setNotifications,
+} = userSlice.actions;
 export default userSlice.reducer;
