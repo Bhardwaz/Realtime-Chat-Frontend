@@ -1,14 +1,15 @@
-import { Box, Button, Tooltip, Text, Menu, MenuButton, MenuItem, MenuList, MenuDivider, Drawer, useDisclosure, DrawerOverlay, DrawerHeader, DrawerContent, DrawerBody, Input, useToast, Spinner } from "@chakra-ui/react"
+import { Box, Button, Tooltip, Text, Menu, MenuButton, MenuItem, MenuList, MenuDivider, Drawer, useDisclosure, DrawerOverlay, DrawerHeader, DrawerContent, DrawerBody, Input, useToast, Spinner, Badge } from "@chakra-ui/react"
 import { useState } from "react"
 import { BellIcon, ChevronDownIcon } from "@chakra-ui/icons"
 import {Avatar} from "@chakra-ui/react"
 import ProfileModal from "../misc/ProfileModal"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import axios from "axios"
 import ChatLoading from "../misc/ChatLoading"
 import UserListItem from "../misc/UserListItem"
 import { useDispatch, useSelector } from "react-redux"
-import { setChats, setSelectedChat } from "../utils/userSlice"
+import { setChats, setNotifications, setSelectedChat } from "../utils/userSlice"
+import { getSender } from "../utils/chatLogics"
 
 const SideDrawer = () => {
    const user =  JSON.parse(localStorage.getItem("loggedInUser"))
@@ -25,7 +26,8 @@ const SideDrawer = () => {
   })
 
   const chats = useSelector(state => state.chatUser.chats)
-  
+  const notifications = useSelector(state => state.chatUser.notifications)
+
   const logoutHandler = () => {
     localStorage.removeItem("loggedInUser")
     navigate("/login")
@@ -132,9 +134,29 @@ const SideDrawer = () => {
     <div>
      <Menu>
       <MenuButton p={1}>
+          {
+            notifications.length > 0 && 
+            (<Badge variant='subtle' colorScheme='green'> 
+            { notifications.length === 1 ? `1 new message` : `${ notifications.length} new messages`} 
+            </Badge> )
+          }
          <BellIcon color='wheat' fontSize={"2xl"} />
       </MenuButton>
-      {/* {<MenuList></MenuList>} */}
+      <MenuList pl={2}>
+        {
+          !notifications.length && "No New Messages"
+        }
+        {
+        notifications.length > 0 && notifications.map(notification => {
+        return <MenuItem key={notification._id} onClick={() => {
+              dispatch(setSelectedChat(notification.chat))
+              dispatch(setNotifications(notifications.filter(n => n !== notification)))
+            }}>
+                {notification.chat.isGroupChat ? `New Message from ${notification.chat.chatName}` : `New Message from ${getSender(user, notification.chat.participants)}` }
+            </MenuItem>
+          })
+        }
+      </MenuList>
      </Menu>
 
      <Menu>
@@ -149,7 +171,17 @@ const SideDrawer = () => {
           <MenuItem> My Profile </MenuItem>  
        </ProfileModal>
        <MenuDivider />  
-       <MenuItem onClick={logoutHandler}> Logout </MenuItem>    
+       <MenuItem onClick={logoutHandler}> Logout </MenuItem>
+        
+       <MenuDivider />  
+
+       <MenuItem> <Link to="https://github.com/Bhardwaz" target="_blank" rel="noopener noreferrer"> Developer | Github </Link> </MenuItem>
+       
+       <MenuDivider />
+
+       <MenuItem> <Link to="https://www.linkedin.com/in/sumit-bhardwaz-53829117b/" target="_blank" rel="noopener noreferrer"> Developer | LinkedIn </Link> </MenuItem>
+
+
       </MenuList>
      </Menu>
     
