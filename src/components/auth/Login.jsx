@@ -35,8 +35,8 @@ const Login = () => {
     };
 
     try {
-    const { data } = await axios.post(`${backendUrl}/api/v1/users/login`, formData, config)
-    setIsLoading(false)
+    const { data } = await axios.post("https://chat-backend-2-7hsy.onrender.com/api/v1/users/login", formData, config)
+    setIsLoading(false) 
     const loggedInUser = JSON.stringify(data?.message?.user)
     const loggedInId = data?.message?.user?._id
     const user = data?.message?.user
