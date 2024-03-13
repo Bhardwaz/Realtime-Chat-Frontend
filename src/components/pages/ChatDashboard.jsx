@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import useActive from "../utils/useActive.js"
-import {useToast} from "@chakra-ui/react"
+import {Avatar, Image, Tooltip, useToast} from "@chakra-ui/react"
 import axios from "axios"
 import { setChats, setSelectedChat } from "../utils/userSlice.js"
 import { Box, Button, Stack, Text } from "@chakra-ui/react"
 import {AddIcon} from "@chakra-ui/icons"
 import ChatLoading from "../misc/ChatLoading.jsx"
-import { getSender } from "../utils/chatLogics.js"
+import { getSender, getSenderAvatar } from "../utils/chatLogics.js"
 import GroupChatModel from "../misc/GroupChatModel.jsx"
 
 function ChatDashboard({ fetchAgain }) {
@@ -99,14 +99,15 @@ function ChatDashboard({ fetchAgain }) {
               py={2}
               borderRadius="lg"
               key={chat._id}>
-                 <Text>
-                     {
-                      !chat.isGroupChat ? (
+          
+          <Text fontSize={"22px"}>
+                  {
+                    !chat.isGroupChat ? (
                          getSender(loggedInUser, chat.participants)
-                      ) : ( chat.chatName )
-                     }
+                    ) : ( chat.chatName )
+                  }
                  </Text>
-              </Box>
+            </Box>
              ))
            }
           </Stack>
