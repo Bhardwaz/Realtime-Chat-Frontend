@@ -8,14 +8,19 @@ import UpdateGroupChatModal from "../misc/UpdateGroupChatModal";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import ScrollableChat from "../misc/ScrollableChat";
+import io from "socket.io-client"
+const ENDPOINT = "http://localhost:4000"
+let socket, selectedChatCompare
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const toast = useToast()
   const [singleChatInfo, setSingleChatInfo] = useState({
        allMessages:[],
        loading:false,
-       newMessage:""
+       newMessage:"",
   })
+
+  const [socketConnected, setSocketConnected] = useState(false)
 
   let user = useSelector(state => state.chatUser.user)
   if(!user){
@@ -37,6 +42,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           }, config)
           
           setSingleChatInfo(prevState => ({...prevState, newMessage: ""}))
+           
+          socket.emit('new message', data.data)
 
           if(singleChatInfo?.allMessages?.length > 0){
             setSingleChatInfo(prevState => ({
@@ -50,7 +57,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             ...prevState,
             allMessages: [data.data]
           }));
-
          } catch (error) {
           toast({
             title: "Error sending the message",
@@ -79,6 +85,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
       setSingleChatInfo(prevState =>({...prevState, loading:false}))
 
+      socket.emit('join chat', selectedChat._id)
+
     } catch (error) {
       toast({
         title: "Error sending the message",
@@ -94,11 +102,29 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const typingHandler = (e) => {
     setSingleChatInfo(prevState => ({...prevState, newMessage : e.target.value}))
   }
+
+  useEffect(() => {
+    socket = io(ENDPOINT)
+    socket.emit("setup", user)
+    socket.on('connection', () => setSocketConnected(true))
+  }, [])
   
    useEffect(() => {
      fetchMessages()
+     selectedChatCompare = selectedChat
    }, [selectedChat])
-    
+
+   useEffect(() => {
+    socket.on('message received', (newMessageReceived) => {
+      console.log(newMessageReceived, "new message received");
+      if(!selectedChatCompare || selectedChatCompare._id !== newMessageReceived.chat._id ){
+         // give notification
+      }else{
+        setSingleChatInfo(prevState => ({...prevState, allMessages:[...prevState.allMessages, newMessageReceived]}))
+      }
+    })
+   })
+
   return <div> 
     {
       selectedChat ? (
