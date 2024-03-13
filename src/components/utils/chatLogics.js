@@ -44,6 +44,12 @@ export const getSender = (loggedInUser, participants) => {
     : participants[0].username;
 };
 
+export const getSenderAvatar = (loggedInUser, participants) => {
+  return participants[0]._id === loggedInUser._id
+    ? participants[1].avatar
+    : participants[0].avatar;
+};
+
 export const getSenderObject = (loggedInUser, participants) => {
   return participants[0]._id === loggedInUser._id
     ? participants[1]
