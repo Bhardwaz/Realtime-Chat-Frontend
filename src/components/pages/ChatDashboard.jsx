@@ -24,8 +24,8 @@ function ChatDashboard({ fetchAgain }) {
       const config = {
         "Content-type": "application/json",
       };
-      const { data } = await axios.get("/api/v1/chat", config);
-      dispatch(setChats(data?.data))       
+      const { data } = await axios.get("https://chat-backend-2-7hsy.onrender.com/api/v1/chat", config);
+      dispatch(setChats(data?.data));       
     } catch (error) {
       toast({
         title: "Error Occured!",

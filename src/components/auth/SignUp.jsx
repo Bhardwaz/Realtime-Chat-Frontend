@@ -39,7 +39,7 @@ export default function SignUp() {
       formData.append("password", userData.password)
       formData.append("avatar", userData.avatar)
       
-      const { data } = await axios.post('/api/v1/users/register', formData, {
+      const { data } = await axios.post('https://chat-backend-2-7hsy.onrender.com/api/v1/users/register', formData, {
         headers:{
           "Content-Type":"multipart/form-data"
         }

@@ -53,10 +53,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             "Content-Type":"application/json"
           }
           
-          const { data } = await axios.post("/api/v1/message", {
+          const { data } = await axios.post("https://chat-backend-2-7hsy.onrender.com/api/v1/message", {
             content:singleChatInfo.newMessage,
             chatId: selectedChat._id
-          }, config)
+          }, config);
           
           setSingleChatInfo(prevState => ({...prevState, newMessage: ""}))
            
@@ -96,7 +96,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       const config = {
         "Content-Type":"application/json"
       }
-      const {data} = await axios.get(`/api/v1/message/${selectedChat._id}`, config)
+      const {data} = await axios.get(`https://chat-backend-2-7hsy.onrender.com/api/v1/message/${selectedChat._id}`, config);
       
       setSingleChatInfo(prevState =>({...prevState, allMessages:data}))
 

@@ -60,10 +60,10 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessages }) => {
          "Content-type":"application/json"
         }
         
-        const {data} = await axios.put("/api/v1/chat/changename", {
+        const {data} = await axios.put("https://chat-backend-2-7hsy.onrender.com/api/v1/chat/changename", {
             groupId:selectedChat._id,
             name:groupChatActions.groupChatName
-        }, config)
+        }, config);
 
         dispatch(setSelectedChat(data.data))
         setFetchAgain(!fetchAgain)
@@ -94,7 +94,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessages }) => {
         const config = {
             "Content-type":"application/json"
         }
-        const { data } = await axios.get(`/api/v1/users/searchUser?searchUser=${groupChatActions.search}`, config)
+        const { data } = await axios.get(`https://chat-backend-2-7hsy.onrender.com/api/v1/users/searchUser?searchUser=${groupChatActions.search}`, config);
 
         console.log(data);
 
@@ -142,10 +142,10 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessages }) => {
             "Content-type":"application/json"
         }
 
-        const { data } = await axios.put("/api/v1/chat/groupadd", {
+        const { data } = await axios.put("https://chat-backend-2-7hsy.onrender.com/api/v1/chat/groupadd", {
             groupId: selectedChat._id,
             participantId: user1._id
-        }, config)
+        }, config);
 
         dispatch(setSelectedChat(data.data))
         setFetchAgain(!fetchAgain)
@@ -182,10 +182,10 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessages }) => {
             "Content-type":"application/json"
         }
 
-        const {data} = await axios.put("/api/v1/chat/groupremove", {
+        const {data} = await axios.put("https://chat-backend-2-7hsy.onrender.com/api/v1/chat/groupremove", {
             groupId: selectedChat._id,
             participantId: user1._id
-        }, config)
+        }, config);
 
         user1._id === user._id ? dispatch(setSelectedChat("")) : dispatch(setSelectedChat(data.data))
 

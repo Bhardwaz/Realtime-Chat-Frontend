@@ -38,9 +38,8 @@ const GroupChatModel = ({ children }) => {
         const config = {
             "Content-type":"application/json"
         }
-        const { data } = await axios.get(`/api/v1/users/searchUser?searchUser=${groupChatInfo.search}`, config)
+        const { data } = await axios.get(`https://chat-backend-2-7hsy.onrender.com/api/v1/users/searchUser?searchUser=${groupChatInfo.search}`, config);
 
-        console.log(data);
 
         setGroupChatInfo(prevState => ({ ...prevState, loading: false }));
 
@@ -96,12 +95,11 @@ const GroupChatModel = ({ children }) => {
       "Content-type":"application/json"
     }
 
-    const { data } = await axios.post('/api/v1/chat/creategroup',{ 
+    const { data } = await axios.post('https://chat-backend-2-7hsy.onrender.com/api/v1/chat/creategroup',{ 
      name:groupChatInfo.name,
      participants:JSON.stringify(groupChatInfo.participants.map(p => p._id))
-    }, config)
+    }, config);
     
-    console.log(data, "submit handler");
 
     dispatch(setChats([data.data, ...chats]))
     onClose()

@@ -59,7 +59,7 @@ const SideDrawer = () => {
             "Content-type": "application/json"
         };
   
-        const { data } = await axios.get(`/api/v1/users/searchUser?searchUser=${searchUsers.search}`, config);
+        const { data } = await axios.get(`https://chat-backend-2-7hsy.onrender.com/api/v1/users/searchUser?searchUser=${searchUsers.search}`, config);
   
         setSearchUsers(prevState => ({ ...prevState, loading: false }));
 
@@ -85,9 +85,9 @@ const SideDrawer = () => {
         "Content-type": "application/json"
     };
 
-    const { data } = await axios.post('/api/v1/chat', {
+    const { data } = await axios.post('https://chat-backend-2-7hsy.onrender.com/api/v1/chat', {
         _id
-    }, config)
+    }, config);
     if(!chats?.find(chat => chat._id === data._id)) dispatch(setChats([data?.data, ...chats]))
 
     dispatch(setSelectedChat(data?.data))
