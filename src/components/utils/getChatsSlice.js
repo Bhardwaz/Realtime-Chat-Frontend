@@ -6,7 +6,7 @@ export const fetchChats = createAsyncThunk("fetchChats", async () => {
     const config = {
       "Content-type": "application/json",
     };
-    const { data } = await axios.get("/api/v1/chat", config);
+    const { data } = await axios.get("https://chat-backend-2-7hsy.onrender.com/api/v1/chat", config);
     console.log(data);
     return data;
   } catch (error) {

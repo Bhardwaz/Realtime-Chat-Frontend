@@ -12,7 +12,6 @@ import { setChats, setNotifications, setSelectedChat } from "../utils/userSlice"
 import { getSender } from "../utils/chatLogics"
 
 const SideDrawer = () => {
-   const user =  JSON.parse(localStorage.getItem("loggedInUser"))
    const navigate = useNavigate()
    const toast = useToast()
    const dispatch = useDispatch()
@@ -26,6 +25,10 @@ const SideDrawer = () => {
   })
 
   const chats = useSelector(state => state.chatUser.chats)
+  let user = useSelector(state => state.chatUser.user)
+  if(!user){
+    user =  JSON.parse(localStorage.getItem("loggedInUser"))
+  }
   const notifications = useSelector(state => state.chatUser.notifications)
 
   const logoutHandler = () => {
@@ -54,12 +57,15 @@ const SideDrawer = () => {
     }
     try {
         setSearchUsers(prevState => ({ ...prevState, loading: true }));
-  
+        
         const config = {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
             "Content-type": "application/json"
+          },
         };
-  
-        const { data } = await axios.get(`https://chat-backend-2-7hsy.onrender.com/api/v1/users/searchUser?searchUser=${searchUsers.search}`, config);
+        
+        const { data } = await axios.get(`https://realtime-chat-backend-cynt.onrender.com/api/v1/users/searchUser?searchUser=${searchUsers.search}`, config);
   
         setSearchUsers(prevState => ({ ...prevState, loading: false }));
 
@@ -82,10 +88,13 @@ const SideDrawer = () => {
      setSearchUsers(prevState => ({ ...prevState, loadingChat: true }));   
 
      const config = {
+      headers: {
+        Authorization: `Bearer ${user.token}`,
         "Content-type": "application/json"
+      },
     };
 
-    const { data } = await axios.post('https://chat-backend-2-7hsy.onrender.com/api/v1/chat', {
+    const { data } = await axios.post('https://realtime-chat-backend-cynt.onrender.com/api/v1/chat', {
         _id
     }, config);
     if(!chats?.find(chat => chat._id === data._id)) dispatch(setChats([data?.data, ...chats]))

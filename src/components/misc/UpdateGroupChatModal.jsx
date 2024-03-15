@@ -57,10 +57,13 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessages }) => {
         setGroupChatActions(prevState => ({...prevState, renameLoading:true}))
 
         const config = {
-         "Content-type":"application/json"
-        }
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+            "Content-type": "application/json"
+          },
+        };
         
-        const {data} = await axios.put("https://chat-backend-2-7hsy.onrender.com/api/v1/chat/changename", {
+        const {data} = await axios.put("https://realtime-chat-backend-cynt.onrender.com/api/v1/chat/changename", {
             groupId:selectedChat._id,
             name:groupChatActions.groupChatName
         }, config);
@@ -92,9 +95,12 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessages }) => {
     try {
         setGroupChatActions(prevState => ({ ...prevState, loading: true }));  
         const config = {
-            "Content-type":"application/json"
-        }
-        const { data } = await axios.get(`https://chat-backend-2-7hsy.onrender.com/api/v1/users/searchUser?searchUser=${groupChatActions.search}`, config);
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+            "Content-type": "application/json"
+          },
+        };
+        const { data } = await axios.get(`https://realtime-chat-backend-cynt.onrender.com/api/v1/users/searchUser?searchUser=${groupChatActions.search}`, config);
 
         console.log(data);
 
@@ -139,10 +145,13 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessages }) => {
         setGroupChatActions(prevState => ({...prevState, loading:true}))
 
         const config = {
-            "Content-type":"application/json"
-        }
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+            "Content-type": "application/json"
+          },
+        };
 
-        const { data } = await axios.put("https://chat-backend-2-7hsy.onrender.com/api/v1/chat/groupadd", {
+        const { data } = await axios.put("https://realtime-chat-backend-cynt.onrender.com/api/v1/chat/groupadd", {
             groupId: selectedChat._id,
             participantId: user1._id
         }, config);
@@ -179,10 +188,13 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, fetchMessages }) => {
         setGroupChatActions(prevState => ({...prevState, loading:true}))
 
         const config = {
-            "Content-type":"application/json"
-        }
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+            "Content-type": "application/json"
+          },
+        };
 
-        const {data} = await axios.put("https://chat-backend-2-7hsy.onrender.com/api/v1/chat/groupremove", {
+        const {data} = await axios.put("https://realtime-chat-backend-cynt.onrender.com/api/v1/chat/groupremove", {
             groupId: selectedChat._id,
             participantId: user1._id
         }, config);

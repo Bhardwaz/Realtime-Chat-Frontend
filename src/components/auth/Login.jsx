@@ -32,21 +32,21 @@ const Login = () => {
         "Content-type": "application/json",
       },
     };
-
+    
     try {
-    const { data } = await axios.post("https://chat-backend-2-7hsy.onrender.com/api/v1/users/login", formData, config);
-    setIsLoading(false); 
-    const loggedInUser = JSON.stringify(data?.message?.user)
-    const loggedInId = data?.message?.user?._id
-    const user = data?.message?.user
+    const { data } = await axios.post("http://localhost:4000/api/v1/users/login", formData, config);
+
+    setIsLoading(false);
+    console.log(data, "data"); 
+    const loggedInUser = JSON.stringify(data)
+    const loggedInId = data?._id
     if(loggedInUser){
     console.log(loggedInUser);
     localStorage.setItem("loggedInUser", loggedInUser)
     localStorage.setItem("loggedInId", loggedInId)
-    dispatch(setUser(user))
+    dispatch(setUser(data))
     navigate('/home')
     }
-
     } catch (error) {
       console.log(error?.response?.data?.data);
       setShowResponse(true)
@@ -73,7 +73,7 @@ const Login = () => {
     <>
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
   <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-    <img className="mx-auto h-10 w-auto" src="https://cdn-icons-png.flaticon.com/512/10948/10948696.png" alt="Your Company"/>
+    <img className="mx-auto h-10 w-auto" src="https://cdn-icons-png.flaticon.com/512/10948/10948696.png" alt=""/>
     <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-white">Sign in to your account</h2>
   </div>
 

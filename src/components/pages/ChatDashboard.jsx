@@ -7,7 +7,7 @@ import { setChats, setSelectedChat } from "../utils/userSlice.js"
 import { Box, Button, Stack, Text } from "@chakra-ui/react"
 import {AddIcon} from "@chakra-ui/icons"
 import ChatLoading from "../misc/ChatLoading.jsx"
-import { getSender, getSenderAvatar } from "../utils/chatLogics.js"
+import { getSender } from "../utils/chatLogics.js"
 import GroupChatModel from "../misc/GroupChatModel.jsx"
 
 function ChatDashboard({ fetchAgain }) {
@@ -19,14 +19,22 @@ function ChatDashboard({ fetchAgain }) {
   
   const chats = useSelector(state => state?.chatUser?.chats)
 
+  let user = useSelector(state => state?.chatUser?.user)
+
+  if(!user){
+    user =  JSON.parse(localStorage.getItem("loggedInUser"))
+  }
   const fetchChats = async () => {
     try {
       const config = {
-        "Content-type": "application/json",
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
       };
-      const { data } = await axios.get("https://chat-backend-2-7hsy.onrender.com/api/v1/chat", config);
+      const { data } = await axios.get("https://realtime-chat-backend-cynt.onrender.com/api/v1/chat", config);
       dispatch(setChats(data?.data));       
-    } catch (error) {
+    } catch (error) { 
+      console.log(error);
       toast({
         title: "Error Occured!",
         description: "Failed to Load the chats",
@@ -42,7 +50,6 @@ function ChatDashboard({ fetchAgain }) {
     setLoggedInUser(JSON.parse(localStorage.getItem('loggedInUser')))
     fetchChats()
   }, [fetchAgain])
-
   return (
      <Box
       display={{ base: selectedChat ? "none" : "flex", md: "flex" }}

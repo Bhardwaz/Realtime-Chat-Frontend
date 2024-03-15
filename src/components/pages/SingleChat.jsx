@@ -11,7 +11,7 @@ import ScrollableChat from "../misc/ScrollableChat";
 import Lottie  from "react-lottie"
 import animationData from "../../animation/typing.json"
 import io from "socket.io-client"
-const ENDPOINT = "https://chat-backend-2-7hsy.onrender.com"
+const ENDPOINT = ""
 let socket, selectedChatCompare
 import { setNotifications } from "../utils/userSlice";
 
@@ -50,10 +50,13 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
       socket.emit('stop typing', selectedChat._id)
          try {
           const config = {
-            "Content-Type":"application/json"
-          }
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+              "Content-type": "application/json"
+            },
+          };
           
-          const { data } = await axios.post("https://chat-backend-2-7hsy.onrender.com/api/v1/message", {
+          const { data } = await axios.post("https://realtime-chat-backend-cynt.onrender.com/api/v1/message", {
             content:singleChatInfo.newMessage,
             chatId: selectedChat._id
           }, config);
@@ -94,9 +97,12 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
     try {
       const config = {
-        "Content-Type":"application/json"
-      }
-      const {data} = await axios.get(`https://chat-backend-2-7hsy.onrender.com/api/v1/message/${selectedChat._id}`, config);
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+          "Content-type": "application/json"
+        },
+      };
+      const {data} = await axios.get(`https://realtime-chat-backend-cynt.onrender.com/api/v1/message/${selectedChat._id}`, config);
       
       setSingleChatInfo(prevState =>({...prevState, allMessages:data}))
 
@@ -143,8 +149,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
     socket.on('typing', () => setTyping(true))
     socket.on('stop typing', () => setTyping(false))
+  }, [])
 
-    socket.on('message received', (newMessageReceived) => {
+  useEffect(() => {
+     socket.on('message received', (newMessageReceived) => {
       console.log(newMessageReceived, "new message received");
       if(!selectedChatCompare || selectedChatCompare._id !== newMessageReceived.chat._id ){
          if(!notifications.includes(newMessageReceived)){
@@ -155,7 +163,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         setSingleChatInfo(prevState => ({...prevState, allMessages:[...prevState.allMessages, newMessageReceived]}))
       }
     })
-  }, [])
+  })
   
    useEffect(() => {
      fetchMessages()

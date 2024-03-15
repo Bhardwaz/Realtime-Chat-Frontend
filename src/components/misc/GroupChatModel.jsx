@@ -36,9 +36,12 @@ const GroupChatModel = ({ children }) => {
     try {
         setGroupChatInfo(prevState => ({ ...prevState, loading: true }));  
         const config = {
-            "Content-type":"application/json"
-        }
-        const { data } = await axios.get(`https://chat-backend-2-7hsy.onrender.com/api/v1/users/searchUser?searchUser=${groupChatInfo.search}`, config);
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+            "Content-type": "application/json"
+          },
+        };
+        const { data } = await axios.get(`https://realtime-chat-backend-cynt.onrender.com/api/v1/users/searchUser?searchUser=${groupChatInfo.search}`, config);
 
 
         setGroupChatInfo(prevState => ({ ...prevState, loading: false }));
@@ -92,10 +95,13 @@ const GroupChatModel = ({ children }) => {
   }
   try {
     const config = {
-      "Content-type":"application/json"
-    }
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+        "Content-type": "application/json"
+      },
+    };
 
-    const { data } = await axios.post('https://chat-backend-2-7hsy.onrender.com/api/v1/chat/creategroup',{ 
+    const { data } = await axios.post('https://realtime-chat-backend-cynt.onrender.com/api/v1/chat/creategroup',{ 
      name:groupChatInfo.name,
      participants:JSON.stringify(groupChatInfo.participants.map(p => p._id))
     }, config);
