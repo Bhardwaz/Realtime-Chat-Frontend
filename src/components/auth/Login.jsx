@@ -34,7 +34,7 @@ const Login = () => {
     };
     
     try {
-    const { data } = await axios.post("http://localhost:4000/api/v1/users/login", formData, config);
+    const { data } = await axios.post("https://realtime-chat-backend-cynt.onrender.com/api/v1/users/login", formData, config);
 
     setIsLoading(false);
     console.log(data, "data"); 

@@ -11,7 +11,7 @@ import ScrollableChat from "../misc/ScrollableChat";
 import Lottie  from "react-lottie"
 import animationData from "../../animation/typing.json"
 import io from "socket.io-client"
-const ENDPOINT = ""
+const ENDPOINT = "https://realtime-chat-backend-cynt.onrender.com"
 let socket, selectedChatCompare
 import { setNotifications } from "../utils/userSlice";
 
