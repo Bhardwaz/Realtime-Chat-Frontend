@@ -149,10 +149,8 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
     socket.on('typing', () => setTyping(true))
     socket.on('stop typing', () => setTyping(false))
-  }, [])
 
-  useEffect(() => {
-     socket.on('message received', (newMessageReceived) => {
+    socket.on('message received', (newMessageReceived) => {
       console.log(newMessageReceived, "new message received");
       if(!selectedChatCompare || selectedChatCompare._id !== newMessageReceived.chat._id ){
          if(!notifications.includes(newMessageReceived)){
@@ -163,7 +161,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         setSingleChatInfo(prevState => ({...prevState, allMessages:[...prevState.allMessages, newMessageReceived]}))
       }
     })
-  })
+  }, [])
   
    useEffect(() => {
      fetchMessages()
